@@ -78,6 +78,7 @@
 #define PLUGIN_jaytrax_LIB "@PLUGIN_jaytrax_LIB@"
 #define PLUGIN_jaytrax_NAME "@PLUGIN_jaytrax_NAME@"
 #define PLUGIN_jaytrax_VERSION "@PLUGIN_jaytrax_VERSION@"
+#define PLUGIN_jaytrax_CONFIG_FILENAME "@PLUGIN_jaytrax_CONFIG_FILENAME@"
 
 #define PLUGIN_kdm 14
 #define PLUGIN_kdm_LIB "@PLUGIN_kdm_LIB@"

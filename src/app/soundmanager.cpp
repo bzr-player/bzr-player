@@ -710,6 +710,7 @@ bool SoundManager::loadSound(const QString &filePath, Info *infoProvided) {
         info->plugin != PLUGIN_highly_quixotic &&
         info->plugin != PLUGIN_highly_theoretical &&
         info->plugin != PLUGIN_hivelytracker &&
+        info->plugin != PLUGIN_jaytrax &&
         info->plugin != PLUGIN_klystron &&
         info->plugin != PLUGIN_lazyusf2 &&
         info->plugin != PLUGIN_libkss &&

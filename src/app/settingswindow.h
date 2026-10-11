@@ -241,6 +241,8 @@ private slots:
 
     void on_checkBoxHivelyTrackerContinuousPlayback_toggled(bool isChecked) const;
 
+    void on_checkBoxJaytraxContinuousPlayback_toggled(bool isChecked) const;
+
     void on_checkBoxKlystronContinuousPlayback_toggled(bool isChecked) const;
 
     void on_sliderKlystronOversampling_valueChanged(int value) const;
@@ -324,6 +326,8 @@ private:
 
     void loadSettingsHivelytracker() const;
 
+    void loadSettingsJaytrax() const;
+
     void loadSettingsKlystron() const;
 
     void loadSettingsLazyusf2() const;
@@ -367,6 +371,8 @@ private:
     void saveSettingsHighlyTheoretical() const;
 
     void saveSettingsHivelytracker() const;
+
+    void saveSettingsJaytrax() const;
 
     void saveSettingsKlystron() const;
 
