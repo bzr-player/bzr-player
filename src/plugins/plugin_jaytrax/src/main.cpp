@@ -46,12 +46,21 @@ public:
         memset(&waveformat, 0, sizeof(waveformat));
     }
 
+    static uint32_t msToSamples(const uint32_t ms) {
+        const uint64_t samples = static_cast<uint64_t>(ms) * sampleRate * channels / 1000;
+        return static_cast<uint32_t>(samples);
+    }
+
     ~pluginJaytrax() {
     }
 
+    static constexpr unsigned int sampleRate = 44100;
+    static constexpr unsigned int channels = 2;
+    Info *info;
     FMOD_CODEC_WAVEFORMAT waveformat;
     JT1Player *jay;
     int32_t songLength;
+    uint32_t renderingPosition = 0;
 };
 
 /*
@@ -74,15 +83,26 @@ F_EXPORT FMOD_CODEC_DESCRIPTION * F_CALL FMODGetCodecDescription() {
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo) {
     logDebug("Try", PLUGIN_jaytrax_NAME);
 
-    auto *info = static_cast<Info *>(userexinfo->userdata);
+    auto *plugin = new pluginJaytrax(codec);
+    plugin->info = static_cast<Info *>(userexinfo->userdata);
 
     JT1Song *song;
 
-    if (jxsfile_readSongMem(info->fileBuffer, info->filesize, &song) != 0) {
+    if (jxsfile_readSongMem(plugin->info->fileBuffer, plugin->info->filesize, &song) != 0) {
+        delete plugin;
         return FMOD_ERR_FORMAT;
     }
 
-    string filename = info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
+    plugin->jay = jaytrax_init();
+
+    if (!plugin->jay) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
+
+    plugin->jay->song = song;
+
+    string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
     bool useDefaults = false;
 
@@ -92,7 +112,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     // defaults
-    info->isContinuousPlaybackActive = false;
+    plugin->info->isContinuousPlaybackActive = false;
 
     if (!useDefaults) {
         string line;
@@ -104,21 +124,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             string value = line.substr(i + 1);
 
             if (word == "continuousPlayback") {
-                info->isContinuousPlaybackActive = info->isPlayModeRepeatSongEnabled && value == "true";
+                plugin->info->isContinuousPlaybackActive = plugin->info->isPlayModeRepeatSongEnabled && value == "true";
             }
         }
 
         ifs.close();
     }
 
-    auto *plugin = new pluginJaytrax(codec);
-
-    plugin->jay = jaytrax_init();
-    plugin->jay->song = song;
-
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
-    plugin->waveformat.channels = 2;
-    plugin->waveformat.frequency = 44100;
+    plugin->waveformat.channels = pluginJaytrax::channels;
+    plugin->waveformat.frequency = pluginJaytrax::sampleRate;
     plugin->waveformat.pcmblocksize = plugin->waveformat.format * plugin->waveformat.channels;
     plugin->waveformat.lengthpcm = -1;
 
@@ -128,16 +143,16 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     codec->plugindata = plugin; // user data value
 
     plugin->songLength = static_cast<int32_t>(
-        static_cast<int64_t>(jaytrax_getLength(plugin->jay, info->currentSubsong, 1, plugin->waveformat.frequency))
-        * 1000 / plugin->waveformat.frequency);
+        static_cast<int64_t>(jaytrax_getLength(plugin->jay, plugin->info->currentSubsong, 1, pluginJaytrax::sampleRate))
+        * 1000 / pluginJaytrax::sampleRate);
 
-    jaytrax_changeSubsong(plugin->jay, info->currentSubsong);
+    jaytrax_changeSubsong(plugin->jay, plugin->info->currentSubsong);
 
-    info->numSubsongs = plugin->jay->song->nrofsongs;
-    info->plugin = PLUGIN_jaytrax;
-    info->pluginName = PLUGIN_jaytrax_NAME;
-    info->fileFormat = "Jaytrax";
-    info->setSeekable(false);
+    plugin->info->numSubsongs = plugin->jay->song->nrofsongs;
+    plugin->info->plugin = PLUGIN_jaytrax;
+    plugin->info->pluginName = PLUGIN_jaytrax_NAME;
+    plugin->info->fileFormat = "Jaytrax";
+    plugin->info->setSeekable(true);
 
     return FMOD_OK;
 }
@@ -154,10 +169,11 @@ static FMOD_RESULT F_CALL close(FMOD_CODEC_STATE *codec) {
 }
 
 static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned int size, unsigned int *read) {
-    const auto *plugin = static_cast<pluginJaytrax *>(codec->plugindata);
+    auto *plugin = static_cast<pluginJaytrax *>(codec->plugindata);
 
     jaytrax_renderChunk(plugin->jay, static_cast<int16_t *>(buffer), static_cast<int32_t>(size),
-                        plugin->waveformat.frequency);
+                        pluginJaytrax::sampleRate, 0);
+    plugin->renderingPosition += size;
 
     *read = size;
     return FMOD_OK;
@@ -176,10 +192,36 @@ static FMOD_RESULT F_CALL getLength(FMOD_CODEC_STATE *codec, unsigned int *lengt
 
 static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, unsigned int position,
                                       FMOD_TIMEUNIT postype) {
+    auto *plugin = static_cast<pluginJaytrax *>(codec->plugindata);
+
     if (postype == FMOD_TIMEUNIT_MS) {
-        //        jaytrax_stopSong(plugin->jay);
-        //        jaytrax_loadSong(plugin->jay,plugin->jay->song);
-        //        jaytrax_continueSong(plugin->jay);
+        bool shouldReinit;
+        bool shouldSeek = false;
+        uint32_t seekPosition = 0;
+
+        if (position == 0) {
+            shouldReinit = plugin->renderingPosition != 0;
+        } else {
+            seekPosition = pluginJaytrax::msToSamples(position) & ~1;
+            shouldReinit = seekPosition < plugin->renderingPosition;
+            shouldSeek = true;
+        }
+
+        if (shouldReinit) {
+            jaytrax_changeSubsong(plugin->jay, plugin->info->currentSubsong);
+            plugin->renderingPosition = 0;
+        }
+
+        if (shouldSeek) {
+            const uint32_t samplesToSkip = seekPosition - plugin->renderingPosition;
+            vector<short int> dummyBuffer(samplesToSkip);
+
+            jaytrax_renderChunk(plugin->jay, dummyBuffer.data(),
+                                static_cast<int>(samplesToSkip / pluginJaytrax::channels), pluginJaytrax::sampleRate,
+                                1);
+            plugin->renderingPosition += samplesToSkip;
+        }
+
         return FMOD_OK;
     }
 

@@ -1,0 +1,39 @@
+--- lib_oldjaytrax/jaytrax.c	2021-12-25 12:17:49.000000000 +0100
++++ lib_oldjaytrax/jaytrax.c	2026-11-27 15:17:27.805000000 +0100
+@@ -1541,7 +1541,7 @@
+     jaymix_setInterp(&SELF->itp, id);
+ }
+ 
+-void jaytrax_renderChunk(JT1Player* SELF, int16_t* outbuf, int32_t nrofsamples, int32_t frequency) {
++void jaytrax_renderChunk(JT1Player* SELF, int16_t* outbuf, int32_t nrofsamples, int32_t frequency, int isseek) {
+     int16_t ic, is;
+     int32_t r;
+     int16_t amplification;                          // amount to amplify afterwards
+@@ -1637,9 +1637,10 @@
+                     int16_t* delRBuf = &SELF->rightDelayBuffer[0];
+                     int32_t* tempBuf = &SELF->tempBuf[0];
+                     
+-                    
+-                    jaymix_mixCore(SELF, morenos);
+-                    
++                    if (!isseek) {
++                        jaymix_mixCore(SELF, morenos);
++                    }
++
+                     for(is=0; is < morenos; is++) {
+                         int32_t lsample, rsample, echosamplel, echosampler;
+                         int32_t off = MIXBUF_NR * is;
+@@ -1715,9 +1716,10 @@
+                     int16_t* delRBuf = &SELF->rightDelayBuffer[0];
+                     int32_t* tempBuf = &SELF->tempBuf[0];
+                     
+-                    
+-                    jaymix_mixCore(SELF, morenos);
+-                    
++                    if (!isseek) {
++                        jaymix_mixCore(SELF, morenos);
++                    }
++
+                     for(is=0; is < morenos; is++) {
+                         int32_t lsample, rsample;
+                         int32_t off = MIXBUF_NR * is;

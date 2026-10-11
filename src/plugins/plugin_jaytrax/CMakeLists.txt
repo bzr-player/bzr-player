@@ -17,7 +17,8 @@ set(FILENAME_URL "${VERSION}.tar.gz")
 set(URL "https://github.com/pachuco/${NAME}/archive/${FILENAME_URL}")
 set(SHA_256_HASH "5a25785f2a26827a26c4cecc16984f2b7f507dd5b669b0494d4667e9cea9e1b4")
 set(UNPACKED_DIR "${NAME}-${VERSION}")
-download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/lib_oldjaytrax/*.c

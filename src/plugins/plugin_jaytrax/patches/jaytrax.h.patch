@@ -1,0 +1,11 @@
+--- lib_oldjaytrax/jaytrax.h	2021-12-25 12:17:49.000000000 +0100
++++ lib_oldjaytrax/jaytrax.h	2026-11-27 15:10:36.033000000 +0100
+@@ -255,7 +255,7 @@
+ void       jaytrax_setInterpolation(JT1Player* SELF, uint8_t id);
+ JT1Player* jaytrax_init(void);
+ void       jaytrax_free(JT1Player* SELF);
+-void       jaytrax_renderChunk(JT1Player* SELF, int16_t* renderbuf, int32_t nrofsamples, int32_t frequency);
++void       jaytrax_renderChunk(JT1Player* SELF, int16_t* renderbuf, int32_t nrofsamples, int32_t frequency, int isseek);
+ int32_t    jaytrax_getLength(JT1Player* SELF, int subsongnr, int loopCnt, int frequency);
+ 
+ #ifdef __cplusplus
