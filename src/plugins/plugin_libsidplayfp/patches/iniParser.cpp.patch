@@ -1,6 +1,6 @@
---- src/utils/iniParser.cpp	2025-12-23 16:07:45.000000000 +0100
-+++ src/utils/iniParser.cpp	2026-07-15 10:35:47.584135337 +0200
-@@ -39,7 +39,7 @@
+--- src/utils/iniParser.cpp	2026-08-30 16:56:45.000000000 +0200
++++ src/utils/iniParser.cpp	2026-10-28 08:53:50.169000000 +0100
+@@ -41,7 +41,7 @@
      return buffer.substr(1, pos-1);
  }
  
@@ -9,16 +9,16 @@
  {
      const size_t pos = buffer.find('=');
  
-@@ -50,7 +50,7 @@
+@@ -52,7 +52,7 @@
  
      const std::string key = buffer.substr(0, buffer.find_last_not_of(' ', pos-1) + 1);
      const std::string value = buffer.substr(pos + 1);
--    return make_pair(key, value);
-+    return make_pair(key, value + sidPath);
+-    return std::make_pair(key, value);
++    return std::make_pair(key, value + sidPath);
  }
  
  bool iniParser::open(const char *fName)
-@@ -86,9 +86,25 @@
+@@ -88,9 +88,25 @@
          if (buffer.empty())
              continue;
  
@@ -44,7 +44,7 @@
          case '#':
              // skip comments
              break;
-@@ -105,8 +121,10 @@
+@@ -107,8 +123,10 @@
          default:
              try
              {
