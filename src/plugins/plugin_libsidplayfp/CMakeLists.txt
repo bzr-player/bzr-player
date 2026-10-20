@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libsidplayfp")
-set(VERSION "2.16.0")
+set(VERSION "3.1.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
 add_subdirectory(deps/sidid)
+add_subdirectory(deps/libresidfp)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
@@ -15,20 +16,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/releases/download/v${VERSION}/${FILENAME}")
-set(SHA_256_HASH "81bfd58ccaa3a0ef28c903b841b4fa3014811901fd12fbb9a80b7b5d5ec2b151")
+set(SHA_256_HASH "12b79190593bf480b2d11481b5c2de62bac07f344437a66cd8d887329875c626")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
 set(PACKAGE_VERSION "${VERSION}")
-set(HAVE_BUILTIN_EXPECT 1)
-set(RESID_BRANCH_HINTS 1)
-set(RESID_INLINING 1)
-set(RESID_INLINE "inline")
-configure_file(
-        ${EXTERNAL_SOURCE_DIR}/src/builders/residfp-builder/residfp/siddefs-fp.h.in
-        ${EXTERNAL_SOURCE_DIR}/src/builders/residfp-builder/residfp/siddefs-fp.h
-        @ONLY NEWLINE_STYLE UNIX
-)
 
 string(REPLACE "." ";" VERSION_LIST ${VERSION})
 list(GET VERSION_LIST 0 VERSION_MAJOR)
@@ -46,8 +38,6 @@ configure_file(
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/builders/residfp-builder/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/builders/residfp-builder/residfp/*.cpp
-        ${EXTERNAL_SOURCE_DIR}/src/builders/residfp-builder/residfp/resample/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/c64/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/c64/CIA/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/c64/CPU/*.cpp
@@ -58,10 +48,6 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/utils/MD5/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/utils/STILview/*.cpp
         src/main.cpp)
-
-list(REMOVE_ITEM SOURCES
-        ${EXTERNAL_SOURCE_DIR}/src/builders/residfp-builder/residfp/resample/test.cpp
-)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
@@ -81,6 +67,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/utils/STILview
 
         deps/sidid/src
+        deps/libresidfp/src
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${LOGGER_API_DIR}
@@ -121,12 +108,11 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE KERNAL_BIN_DATA_PATH="${KERNA
 target_compile_definitions(${PROJECT_NAME} PRIVATE SIDID_CFG_DATA_PATH="${SIDID_CFG_DATA_PATH}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGIN_CONFIGS_DIR="${PLUGIN_CONFIGS_DIR}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CXX20)
-target_compile_definitions(${PROJECT_NAME} PRIVATE RUNTIME_DISPATCH)
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE="${NAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="${URL}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${VERSION}")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE sidid logger)
+target_link_libraries(${PROJECT_NAME} PRIVATE libresidfp sidid logger)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}"

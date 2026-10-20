@@ -8,7 +8,7 @@
  
  #include "SidDatabase.h"
  
-@@ -215,3 +216,30 @@
+@@ -215,3 +216,30 @@ int_least32_t SidDatabase::lengthMs(const char *md5, unsigned int song)
  
      return time;
  }
