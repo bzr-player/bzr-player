@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "asap")
-set(VERSION "8.0.0")
+set(VERSION "8.0.1")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "ASAP" PARENT_SCOPE)
@@ -11,10 +11,13 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
 set(NAME_VERSIONED "${NAME}-${VERSION}")
-set(FILENAME "${NAME_VERSIONED}.tar.gz")
-set(URL "https://sourceforge.net/projects/${NAME}/files/${NAME}/${VERSION}/${FILENAME}")
-set(SHA_256_HASH "062d7db2a0747bf9200560141452f8fa2289909b147ac40a5bb5b60d5275a14f")
-download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false "" "")
+set(NAME_VERSIONED2 "${NAME}-${NAME}-${VERSION}")
+set(FILENAME "${NAME_VERSIONED2}.tar.gz")
+set(FILENAME_URL "${NAME_VERSIONED}.tar.gz")
+set(URL "https://github.com/pfusik/${NAME}/archive/refs/tags/${FILENAME_URL}")
+set(SHA_256_HASH "ffa8dab2decc8ffc73bd2e857e47a150331765f7f2d98beedd0446ac82a8f770")
+set(UNPACKED_DIR "${NAME_VERSIONED2}")
+download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR} "")
 
 file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/asap.c
