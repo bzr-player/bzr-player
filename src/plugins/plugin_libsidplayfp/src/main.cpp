@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <regex>
 #include "residfp.h"
 #include "SidDatabase.h"
 #include "sidemu.h"
@@ -117,24 +118,13 @@ public:
             return "";
         }
 
-        constexpr array fields = {
-            STIL::STILField::name,
-            STIL::STILField::author,
-            STIL::STILField::title,
-            STIL::STILField::artist,
-            STIL::STILField::comment
-        };
-
         const char *stilEntry = nullptr;
         string stilFinal;
 
-        for (const auto field: fields) {
-            stilEntry = stil->getEntry(sidPath, subsong, field);
+        stilEntry = stil->getEntry(sidPath, subsong, STIL::all);
 
-            if (stilEntry) {
-                const auto leadingWhiteSpacesCount = strspn(stilEntry, " ");
-                stilFinal += string(stilEntry + leadingWhiteSpacesCount);
-            }
+        if (stilEntry) {
+            stilFinal += stilEntry;
         }
 
         stilEntry = stil->getEntry(sidPath, 0, STIL::STILField::comment);
@@ -152,22 +142,18 @@ public:
         stilEntry = stil->getBug(sidPath);
 
         if (stilEntry) {
-            const auto leadingWhiteSpacesCount = strspn(stilEntry, " ");
-            stilFinal += string(stilEntry + leadingWhiteSpacesCount);
+            stilFinal += stilEntry;
         }
 
         if (stilFinal.empty()) {
             return "";
         }
 
-        constexpr string_view indentation = "\n         ";
+        static const regex newlineIndent("\n         ");
+        stilFinal = regex_replace(stilFinal, newlineIndent, " ");
 
-        size_t pos = 0;
-
-        while ((pos = stilFinal.find(indentation, pos)) != string::npos) {
-            stilFinal.replace(pos, indentation.length(), " ");
-            pos++;
-        }
+        static const regex leadingWhitespaces("^\\s*", regex::multiline);
+        stilFinal = regex_replace(stilFinal, leadingWhitespaces, "");
 
         return stilFinal.erase(stilFinal.find_last_not_of('\n') + 1);
     }
