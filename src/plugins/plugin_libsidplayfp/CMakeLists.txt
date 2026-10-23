@@ -47,6 +47,7 @@ file(GLOB SOURCES
         ${EXTERNAL_SOURCE_DIR}/src/utils/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/utils/MD5/*.cpp
         ${EXTERNAL_SOURCE_DIR}/src/utils/STILview/*.cpp
+        src/SimpleSidMixer.cpp
         src/main.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

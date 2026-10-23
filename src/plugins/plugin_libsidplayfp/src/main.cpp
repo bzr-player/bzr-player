@@ -15,6 +15,8 @@
 #include "logger.h"
 #include "plugins.h"
 
+#include "SimpleSidMixer.h"
+
 using namespace std;
 
 static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD_CREATESOUNDEXINFO *userexinfo);
@@ -51,6 +53,8 @@ FMOD_CODEC_DESCRIPTION codecDescription =
 };
 
 constexpr uint8_t voicesPerSidChip = 4;
+
+constexpr unsigned int LIBSIDPLAYFP_SEEK_CYCLES = 20000; // Roughly 20ms. For seeking, greater value is marginally better for speed. This particular max value is hardcoded in the lib itself.
 
 class pluginLibsidplayfp {
     FMOD_CODEC_STATE *_codec;
@@ -185,6 +189,7 @@ public:
     SidTune *tune = nullptr;
     ReSIDfpBuilder *rs = nullptr;
     sidplayfp *player = nullptr;
+    std::unique_ptr<SimpleSidMixer> sidMixer = nullptr;
     SidDatabase *sidDb = nullptr;
     STIL *stil = nullptr;
     char *kernal = nullptr;
@@ -240,16 +245,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->player->setRoms((const uint8_t *) plugin->kernal, (const uint8_t *) plugin->basic,
                             (const uint8_t *) plugin->chargen);
 
-    plugin->rs = new ReSIDfpBuilder("Demo");
-
-    // get the number of SIDs supported by the engine
-    plugin->rs->create(plugin->player->info().maxsids());
-
-    // check if builder is ok
-    if (!plugin->rs->getStatus()) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
+    plugin->rs = new ReSIDfpBuilder("BZR");
 
     string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
@@ -262,7 +258,8 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     }
 
     bool filter = true;
-    SidConfig::playback_t playback = SidConfig::STEREO;
+    bool stereo = true;
+
     SidConfig::sid_model_t defaultSidModel = SidConfig::MOS6581;
     SidConfig::c64_model_t c64Model = plugin->info->isSid ? SidConfig::PAL : SidConfig::NTSC;
     SidConfig::sampling_method_t samplingMethod = SidConfig::RESAMPLE_INTERPOLATE;
@@ -286,17 +283,17 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
             } else if (word == "playback") {
                 // old, just for compability
                 if (value == "left") {
-                    playback = SidConfig::MONO;
+                    stereo = false;
                     plugin->channels = 1;
                 } else if (value == "mono") {
-                    playback = SidConfig::MONO;
+                    stereo = false;
                     plugin->channels = 1;
                 } else if (value == "stereo") {
-                    playback = SidConfig::STEREO;
+                    stereo = true;
                     plugin->channels = 2;
                 } else if (value == "right") // old, just for compability
                 {
-                    playback = SidConfig::MONO;
+                    stereo = false;
                     plugin->channels = 1;
                 }
             } else if (word == "sampling_method") {
@@ -365,18 +362,14 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         return FMOD_ERR_FORMAT;
     }
 
-    plugin->rs->filter(filter);
-
     SidConfig cfg;
 
     cfg.frequency = plugin->sampleRate;
-    cfg.playback = playback;
     cfg.forceSidModel = forceSidModel;
     cfg.forceC64Model = forcec64Model;
     cfg.defaultSidModel = defaultSidModel;
     cfg.defaultC64Model = c64Model;
     cfg.samplingMethod = samplingMethod;
-    cfg.fastSampling = false;
     cfg.sidEmulation = plugin->rs;
 
     if (!plugin->player->config(cfg)) {
@@ -388,6 +381,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->tune->selectSong(plugin->info->currentSubsong + 1);
     plugin->player->load(plugin->tune);
+
+    for (int i = 0; i < plugin->player->installedSIDs(); i++) // Note: installedSIDs() returns 0 before load() and after it number of SIDs tune uses. Seems it's not valid for max sids (libsidplayfp bug?).
+    {
+        plugin->player->filter(i, filter);
+    }
 
     plugin->waveformat.format = FMOD_SOUND_FORMAT_PCM16;
     plugin->waveformat.channels = static_cast<int>(plugin->channels);
@@ -405,7 +403,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     plugin->info->numChannels = voicesPerSidChip * s->sidChips();
 
-    plugin->maxVoices = voicesPerSidChip * plugin->player->info().maxsids();
+    plugin->maxVoices = voicesPerSidChip * plugin->player->installedSIDs();
 
     plugin->mutePtr = new bool[plugin->maxVoices];
 
@@ -519,21 +517,13 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
     if (auto *plugin = static_cast<pluginLibsidplayfp *>(codec->plugindata);
         plugin->isSeeking) {
         if (plugin->renderingPosition < plugin->seekPosition) {
-            uint32_t toSkip = plugin->seekPosition - plugin->renderingPosition;
-
-            if (toSkip > 32768) {
-                toSkip = 32768;
-            }
-
-            vector<short> dummyBuffer(toSkip);
-
-            const auto skipped = plugin->player->play(dummyBuffer.data(), toSkip);
+            const int skipped = plugin->player->play(LIBSIDPLAYFP_SEEK_CYCLES) * plugin->channels;
             plugin->renderingPosition += skipped;
 
             memset(buffer, 0, size * plugin->waveformat.pcmblocksize);
             *read = size;
         } else {
-            for (int i = 0; i < plugin->player->info().maxsids(); i++) {
+            for (int i = 0; i < plugin->player->installedSIDs(); i++) {
                 plugin->player->filter(i, true);
             }
 
@@ -541,9 +531,14 @@ static FMOD_RESULT F_CALL read(FMOD_CODEC_STATE *codec, void *buffer, unsigned i
             *read = 0;
         }
     } else {
-        const auto rendered = plugin->player->play(static_cast<short int *>(buffer), 256 * plugin->channels);
-        plugin->renderingPosition += rendered;
-        *read = rendered / plugin->channels;
+        if (plugin->sidMixer == nullptr)
+        {
+            plugin->sidMixer = std::make_unique<SimpleSidMixer>(*plugin->player, plugin->channels);
+        }
+
+        plugin->sidMixer->FillBuffer(buffer, size);
+        plugin->renderingPosition += size * plugin->channels;
+        *read = size;
     }
 
     return FMOD_OK;
@@ -639,13 +634,14 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
             shouldReinit = plugin->renderingPosition != 0;
             plugin->seekPosition = 0;
         } else {
-            for (int i = 0; i < plugin->player->info().maxsids(); i++) {
+            for (int i = 0; i < plugin->player->installedSIDs(); i++) {
                 plugin->player->filter(i, false);
             }
 
             plugin->seekPosition = plugin->msToSamples(position) & ~1;
             shouldReinit = plugin->seekPosition < plugin->renderingPosition;
             plugin->isSeeking = true;
+            plugin->sidMixer = nullptr; // discard any pending buffer content
         }
 
         if (shouldReinit) {
