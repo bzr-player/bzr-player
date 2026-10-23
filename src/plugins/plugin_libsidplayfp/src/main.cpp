@@ -142,7 +142,8 @@ public:
         stilEntry = stil->getBug(sidPath);
 
         if (stilEntry) {
-            stilFinal += stilEntry;
+            static const std::regex newLineBugCredit("\n *\\((.*?)\\)");
+            stilFinal += std::regex_replace(stilEntry, newLineBugCredit, " ($1)");
         }
 
         if (stilFinal.empty()) {
