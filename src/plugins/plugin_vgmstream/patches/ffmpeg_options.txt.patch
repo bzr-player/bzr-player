@@ -1,5 +1,5 @@
---- ext_libs/extra/ffmpeg_options.txt	2025-05-14 23:59:08.000000000 +0200
-+++ ext_libs/extra/ffmpeg_options.txt	2025-09-16 12:09:05.388311601 +0200
+--- ext_libs/extra/ffmpeg_options.txt	2026-10-25 18:11:52.000000000 +0100
++++ ext_libs/extra/ffmpeg_options.txt	2026-10-26 10:08:55.250000000 +0100
 @@ -5,15 +5,15 @@
  # GENERAL CONFIG
  
@@ -31,7 +31,7 @@
  
  # programs (ffplay, ffprobe, ffmpeg), docs (*pages)
  --disable-programs
-@@ -69,7 +69,7 @@
+@@ -72,7 +72,7 @@
  # swresample is for regular opus, probably may be disabled when using libopus
  # (left in case it's needed in the future)
  --enable-swresample
@@ -40,16 +40,16 @@
  
  ###############################################################################
  # FORMATS
-@@ -90,7 +90,7 @@
- # - caf: iOS games
- # - mpc,mpc8: Android games
+@@ -95,7 +95,7 @@
  # - tak,ape: extra for rips with compressed .wav
----enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape
-+--enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,binka,caf,mpc,mpc8,tak,ape,aiff,amr,amrnb,au,avr,dts,ea,epaf,gsm,iff,ircam,nistsphere,nsp,pvf,qoa,rm,sds,sdx,tta,voc,w64,wv
+ # - flv: Shockwave Flash games
+ # - voc: Creative Voice File (with PCM8_U)
+---enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,caf,mpc,mpc8,tak,ape,flv,voc
++--enable-demuxer=ac3,eac3,spdif,asf,xwma,mov,oma,xmv,ogg,flac,wav,aac,mp3,smacker,bink,caf,mpc,mpc8,tak,ape,flv,voc,aiff,amr,amrnb,au,avr,dts,ea,epaf,gsm,iff,ircam,nistsphere,nsp,pvf,qoa,rm,sds,sdx,tta,w64,wv
  
  # parsers take data streams and splits into frames (handles raw-ish formats)
  # - ac3: raw AC3 
-@@ -98,7 +98,7 @@
+@@ -103,7 +103,7 @@
  # - xma: X360 games
  # - vorbis: common (for rare cases, shouldn't be used directly)
  # - opus: Switch/PC games
@@ -58,12 +58,12 @@
  
  # decoders take frames and decodes (handles codecs)
  # (swap libopus with opus if needed)
-@@ -116,7 +116,7 @@
- # - alac,adpcm_ima_qt: iOS games
+@@ -122,7 +122,7 @@
  # - adpcm_ima_dk3,adpcm_ima_dk4: Saturn videos
  # - tak,ape: extra for rips with compressed .wav
----enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,libopus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape
-+--enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,flac,vorbis,opus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape,adpcm_ea,adpcm_ea_maxis_xa,adpcm_ea_r1,adpcm_ea_r2,adpcm_ea_r3,adpcm_ea_xas,adpcm_g722,adpcm_g726le,adpcm_ima_ea_eacs,adpcm_ima_ea_sead,adpcm_ima_oki,adpcm_ima_wav,adpcm_ms,adpcm_sbpro_4,amrnb,dca,gsm,gsm_ms,mace3,mace6,pcm_alaw,pcm_f32be,pcm_f32le,pcm_f64be,pcm_mulaw,pcm_s24be,pcm_s32be,pcm_u16le,pcm_u32le,pcm_u8,qoa,ra_144,truespeech,tta,speex,wavpack,wmalossless
+ # - adpcm_swf: Shockwave Flash games
+---enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,pcm_u8,flac,vorbis,libopus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape,adpcm_swf
++--enable-decoder=ac3,eac3,wmapro,wmav1,wmav2,xma1,xma2,aac,atrac3,atrac3p,mp2float,mp3float,smackaud,binkaudio_dct,binkaudio_rdft,pcm_s16be,pcm_s16be_planar,pcm_s16le,pcm_s16le_planar,pcm_s8,pcm_s8_planar,pcm_u8,flac,vorbis,opus,mpc7,mpc8,alac,adpcm_ima_qt,adpcm_ima_dk3,adpcm_ima_dk4,tak,ape,adpcm_swf,adpcm_ea,adpcm_ea_maxis_xa,adpcm_ea_r1,adpcm_ea_r2,adpcm_ea_r3,adpcm_ea_xas,adpcm_g722,adpcm_g726le,adpcm_ima_ea_eacs,adpcm_ima_ea_sead,adpcm_ima_oki,adpcm_ima_wav,adpcm_ms,adpcm_sbpro_4,amrnb,dca,gsm,gsm_ms,mace3,mace6,pcm_alaw,pcm_f32be,pcm_f32le,pcm_f64be,pcm_mulaw,pcm_s24be,pcm_s32be,pcm_u16le,pcm_u32le,qoa,ra_144,truespeech,tta,speex,wavpack,wmalossless
  
  ###############################################################################
  # OS/TESTS

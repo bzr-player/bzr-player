@@ -6,7 +6,7 @@ project(${NAME})
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
 
-set(VERSION "7.1.1")
+set(VERSION "9.0.2")
 
 file(READ ${EXTERNAL_SOURCE_DIR}/cmake/dependencies/ffmpeg.cmake file_content)
 string(REGEX MATCH "GIT_TAG n([0-9.]*)" MATCH_RESULT ${file_content})
@@ -37,7 +37,7 @@ set(NAME_TAGGED "${NAME2}-${TAG}")
 set(FILENAME "${NAME_TAGGED}.tar.gz")
 set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/${NAME2}/${NAME2}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "f117507dc501f2a6c11f9241d8d0c3213846cfad91764361af37befd6b6c523d")
+set(SHA_256_HASH "6e374ed621e48faa40639307dff48ba6fe574a509977956d2cce9669b7cc27e9")
 set(UNPACKED_DIR "${NAME_TAGGED}")
 
 #TODO "--extra-libs=-static --extra-cflags=--static --pkg-config-flags=--static" needed?

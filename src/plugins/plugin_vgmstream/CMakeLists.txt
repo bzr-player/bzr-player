@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "vgmstream")
-set(VERSION "2117")
+set(VERSION "2168")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -16,7 +16,7 @@ set(NAME_TAGGED "${NAME}-${TAG}")
 set(FILENAME "${NAME_TAGGED}.tar.gz")
 set(FILENAME_URL "${TAG}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/archive/refs/tags/${FILENAME_URL}")
-set(SHA_256_HASH "b9ad0ffabb5919e1c9ec2912416e3ce37916417a8c410196822ce6c610dcde66")
+set(SHA_256_HASH "6390ac616c4a248616f1b9bf6352fe949fcf2350a84844ba9416feac94f02225")
 set(UNPACKED_DIR "${NAME_TAGGED}")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} true ${UNPACKED_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)

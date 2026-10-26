@@ -1,0 +1,14 @@
+--- libavutil/time_internal.h	2026-09-18 01:19:50.000000000 +0200
++++ libavutil/time_internal.h	2026-10-29 09:08:16.139000000 +0100
+@@ -22,6 +22,11 @@
+ #include <time.h>
+ #include "config.h"
+ 
++#ifdef WIN32
++// workaround to build ffmpeg 9.x on mingw64 (see https://trac.ffmpeg.org/ticket/4075)
++#define HAVE_GMTIME_R 0
++#endif
++
+ #if !HAVE_GMTIME_R && !defined(gmtime_r)
+ static inline struct tm *ff_gmtime_r(const time_t* clock, struct tm *result)
+ {
