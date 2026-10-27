@@ -7,8 +7,8 @@ set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_VERSION "${VERSION}" PARENT_SCOPE)
 
-add_subdirectory(deps/sidid)
 add_subdirectory(deps/libresidfp)
+add_subdirectory(deps/sidid)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
@@ -67,7 +67,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${EXTERNAL_SOURCE_DIR}/src/utils/STILview
 
         deps/sidid/src
-        deps/libresidfp/src
 
         ${CMAKE_SOURCE_DIR}/src/app
         ${LOGGER_API_DIR}
