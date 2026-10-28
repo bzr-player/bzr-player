@@ -40,20 +40,20 @@ set(URL "https://github.com/${NAME2}/${NAME2}/archive/refs/tags/${FILENAME_URL}"
 set(SHA_256_HASH "6e374ed621e48faa40639307dff48ba6fe574a509977956d2cce9669b7cc27e9")
 set(UNPACKED_DIR "${NAME_TAGGED}")
 
-#TODO "--extra-libs=-static --extra-cflags=--static --pkg-config-flags=--static" needed?
-set(CONFIGURE_COMMAND "configure ${FFMPEG_OPTIONS} --prefix=./out --disable-x86asm --arch=x86_64")
-
 if (WIN32)
-    set(CONFIGURE_COMMAND "${CONFIGURE_COMMAND} --target-os=mingw64")
+    set(FF_TARGET_OS "mingw64")
 else ()
-    set(CONFIGURE_COMMAND "${CONFIGURE_COMMAND} --target-os=linux")
+    set(FF_TARGET_OS "linux")
 endif ()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CONFIGURE_COMMAND "${CONFIGURE_COMMAND} --extra-cflags=\"-g -DDEBUG\"")
+    set(FF_DEBUG "--extra-cflags=\"-g -DDEBUG\"")
 else ()
-    set(CONFIGURE_COMMAND "${CONFIGURE_COMMAND} --disable-debug")
+    set(FF_DEBUG "--disable-debug")
 endif ()
+
+#TODO "--extra-libs=-static --extra-cflags=--static --pkg-config-flags=--static" needed?
+set(CONFIGURE_COMMAND "configure ${FFMPEG_OPTIONS} --prefix=./out --disable-x86asm --arch=x86_64 --target-os=${FF_TARGET_OS} ${FF_DEBUG}")
 
 list(APPEND FFMPEG_STATIC_LIBS libavcodec)
 list(APPEND FFMPEG_STATIC_LIBS libavformat)
