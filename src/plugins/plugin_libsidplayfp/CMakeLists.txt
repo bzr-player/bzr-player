@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 set(NAME "libsidplayfp")
-set(VERSION "3.1.1")
+set(VERSION "3.1.2")
 project(plugin_${NAME})
 set(PLUGIN_${NAME}_LIB "${PROJECT_NAME}.${LIB_EXT}" PARENT_SCOPE)
 set(PLUGIN_${NAME}_NAME "${NAME}" PARENT_SCOPE)
@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(NAME_VERSIONED "${NAME}-${VERSION}")
 set(FILENAME "${NAME_VERSIONED}.tar.gz")
 set(URL "https://github.com/${NAME}/${NAME}/releases/download/v${VERSION}/${FILENAME}")
-set(SHA_256_HASH "12b79190593bf480b2d11481b5c2de62bac07f344437a66cd8d887329875c626")
+set(SHA_256_HASH "6d16c20e523ac4d3e385531dafe247a830b59bcb4eb73a557f15cf4e7ae6da84")
 download_patch_and_add(${NAME_VERSIONED} ${FILENAME} ${URL} ${SHA_256_HASH} false ""
         ${CMAKE_CURRENT_SOURCE_DIR}/patches)
 
