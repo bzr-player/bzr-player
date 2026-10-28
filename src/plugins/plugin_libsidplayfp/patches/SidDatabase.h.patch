@@ -1,5 +1,5 @@
---- src/utils/SidDatabase.h
-+++ src/utils/SidDatabase.h
+--- src/utils/SidDatabase.h	2026-08-30 16:56:45.000000000 +0200
++++ src/utils/SidDatabase.h	2026-10-28 08:58:18.041000000 +0100
 @@ -24,6 +24,7 @@
  #define SIDDATABASE_H
  
@@ -8,7 +8,7 @@
  
  #include "sidplayfp/siddefs.h"
  
-@@ -101,6 +102,8 @@ public:
+@@ -101,6 +102,8 @@
       */
      int_least32_t lengthMs(const char *md5, unsigned int song);
  

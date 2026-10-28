@@ -1,6 +1,6 @@
---- src/utils/iniParser.cpp
-+++ src/utils/iniParser.cpp
-@@ -41,7 +41,7 @@ std::string iniParser::parseSection(const std::string &buffer)
+--- src/utils/iniParser.cpp	2026-08-30 16:56:45.000000000 +0200
++++ src/utils/iniParser.cpp	2026-10-28 08:53:50.169000000 +0100
+@@ -41,7 +41,7 @@
      return buffer.substr(1, pos-1);
  }
  
@@ -9,16 +9,16 @@
  {
      const size_t pos = buffer.find('=');
  
-@@ -52,7 +52,7 @@ iniParser::keys_t::value_type iniParser::parseKey(const std::string &buffer)
+@@ -52,7 +52,7 @@
  
      const std::string key = buffer.substr(0, buffer.find_last_not_of(' ', pos-1) + 1);
      const std::string value = buffer.substr(pos + 1);
 -    return std::make_pair(key, value);
-+    return make_pair(key, value + sidPath);
++    return std::make_pair(key, value + sidPath);
  }
  
  bool iniParser::open(const char *fName)
-@@ -88,9 +88,25 @@ bool iniParser::open_internal(std::ifstream & iniFile)
+@@ -88,9 +88,25 @@
          if (buffer.empty())
              continue;
  
@@ -44,7 +44,7 @@
          case '#':
              // skip comments
              break;
-@@ -107,8 +123,10 @@ bool iniParser::open_internal(std::ifstream & iniFile)
+@@ -107,8 +123,10 @@
          default:
              try
              {
