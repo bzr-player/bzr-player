@@ -26,9 +26,9 @@ string(REPLACE "." ";" VERSION_LIST ${VERSION})
 list(GET VERSION_LIST 0 VERSION_MAJOR)
 list(GET VERSION_LIST 1 VERSION_MINOR)
 list(GET VERSION_LIST 2 VERSION_PATCH)
-set(MAJOR "${VERSION_MAJOR}")
-set(MINOR "${VERSION_MINOR}")
-set(LEVEL "${VERSION_PATCH}")
+set(LIB_MAJOR "${VERSION_MAJOR}")
+set(LIB_MINOR "${VERSION_MINOR}")
+set(LIB_LEVEL "${VERSION_PATCH}")
 configure_file(
         ${EXTERNAL_SOURCE_DIR}/src/sidplayfp/sidversion.h.in
         ${EXTERNAL_SOURCE_DIR}/src/sidplayfp/sidversion.h
@@ -109,7 +109,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PLUGIN_CONFIGS_DIR="${PLUGIN_
 target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_CXX20)
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE="${NAME}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE PACKAGE_URL="${URL}")
-target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${VERSION}")
+target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION="${libresidfp_VERSION}")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE libresidfp sidid logger)
 
