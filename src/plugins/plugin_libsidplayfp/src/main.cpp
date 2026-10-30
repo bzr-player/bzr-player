@@ -52,7 +52,10 @@ FMOD_CODEC_DESCRIPTION codecDescription =
 
 constexpr uint8_t voicesPerSidChip = 4;
 
-constexpr unsigned int LIBSIDPLAYFP_MAX_CYCLES = 20000; // Roughly 20ms. For seeking, greater value is marginally better for speed. This particular max value is hardcoded in the lib itself.
+/* Roughly 20ms. For seeking, greater value is marginally better for speed.
+ * This particular max value is hardcoded in the lib itself.
+ */
+constexpr unsigned int LIBSIDPLAYFP_MAX_CYCLES = 20000;
 
 class pluginLibsidplayfp {
     FMOD_CODEC_STATE *_codec;
@@ -230,6 +233,18 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     auto *plugin = new pluginLibsidplayfp(codec);
     plugin->info = static_cast<Info *>(userexinfo->userdata);
 
+    if (plugin->info->isSid) {
+        plugin->tune = new SidTune(plugin->info->fileBuffer, static_cast<uint_least32_t>(plugin->info->filesize));
+    } else {
+        plugin->tune = new SidTune(nullptr, plugin->info->filePath.c_str(), nullptr);
+    }
+
+    // check if the tune is valid
+    if (!plugin->tune->getStatus()) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
+
     string filePathKernal = plugin->info->dataPath + KERNAL_BIN_DATA_PATH;
     string filePathBasic = plugin->info->dataPath + BASIC_BIN_DATA_PATH;
     string filePathCharacters = plugin->info->dataPath + CHARACTERS_BIN_DATA_PATH;
@@ -243,7 +258,7 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     plugin->player->setRoms((const uint8_t *) plugin->kernal, (const uint8_t *) plugin->basic,
                             (const uint8_t *) plugin->chargen);
 
-    plugin->rs = new ReSIDfpBuilder("BZR");
+    plugin->rs = new ReSIDfpBuilder("BZR2");
 
     string filename = plugin->info->userPath + PLUGIN_CONFIGS_DIR "/" CONFIG_FILENAME;
     ifstream ifs(filename.c_str());
@@ -343,18 +358,6 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         ifs.close();
     }
 
-    if (plugin->info->isSid) {
-        plugin->tune = new SidTune(plugin->info->fileBuffer, static_cast<uint_least32_t>(plugin->info->filesize));
-    } else {
-        plugin->tune = new SidTune(nullptr, plugin->info->filePath.c_str(), nullptr);
-    }
-
-    // check if the tune is valid
-    if (!plugin->tune->getStatus()) {
-        delete plugin;
-        return FMOD_ERR_FORMAT;
-    }
-
     SidConfig cfg;
 
     cfg.frequency = plugin->sampleRate;
@@ -373,7 +376,11 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
     const SidTuneInfo *s = plugin->tune->getInfo();
 
     plugin->tune->selectSong(plugin->info->currentSubsong + 1);
-    plugin->player->load(plugin->tune);
+
+    if (!plugin->player->load(plugin->tune)) {
+        delete plugin;
+        return FMOD_ERR_FORMAT;
+    }
 
     plugin->player->initMixer(plugin->channels > 1);
     plugin->bufSizeForMaxCycles = plugin->player->getBufSize(LIBSIDPLAYFP_MAX_CYCLES) / plugin->channels;
