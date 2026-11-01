@@ -154,45 +154,46 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
         plugin->info->ripper = songInfo.ripper;
         plugin->info->converter = songInfo.converter;
         plugin->info->fileFormatSpecific = "SNDH";
+        plugin->info->system = "Atari ST";
     } else {
         plugin->info->artist = songInfo.musicAuthor;
         plugin->info->comments = songInfo.converter;
         plugin->info->fileFormatSpecific = "YM";
-    }
 
-    switch (songInfo.ym2149Clock) {
-        case 1000000:
-            plugin->info->system = "Amstrad CPC / Oric";
-            break;
-        case 1228800:
-            plugin->info->system = "FM-7";
-            break;
-        case 1500000:
-            plugin->info->system = "Vectrex";
-            break;
-        case 1750000:
-            plugin->info->system = "Pentagon";
-            break;
-        case 1764000:
-            plugin->info->system = "T/S 2068";
-            break;
-        case 1773400:
-        case 1773447:
-        case 1773450:
-            plugin->info->system = "ZX Spectrum";
-            break;
-        case 1789772:
-        case 1789773:
-            plugin->info->system = "MSX";
-            break;
-        case 2000000:
-            plugin->info->system = "Atari ST / Sharp X1";
-            break;
-        case 3500000:
-            plugin->info->system = "Taganrog";
-            break;
-        default:
-            plugin->info->system = "Unknown";
+        switch (songInfo.ym2149Clock) {
+            case 1000000:
+                plugin->info->system = "Amstrad CPC / Oric";
+                break;
+            case 1228800:
+                plugin->info->system = "FM-7";
+                break;
+            case 1500000:
+                plugin->info->system = "Vectrex";
+                break;
+            case 1750000:
+                plugin->info->system = "Pentagon";
+                break;
+            case 1764000:
+                plugin->info->system = "T/S 2068";
+                break;
+            case 1773400:
+            case 1773447:
+            case 1773450:
+                plugin->info->system = "ZX Spectrum";
+                break;
+            case 1789772:
+            case 1789773:
+                plugin->info->system = "MSX";
+                break;
+            case 2000000:
+                plugin->info->system = "Atari ST / Sharp X1";
+                break;
+            case 3500000:
+                plugin->info->system = "Taganrog";
+                break;
+            default:
+                plugin->info->system = "Unknown";
+        }
     }
 
     plugin->info->fileFormat = songInfo.fileFormat;
