@@ -128,7 +128,8 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             }
 
             addInfo(tableInfo, &row, "System", fromUtf8OrLatin1(info->system));
-            addInfo(tableInfo, &row, "Replayer Rate", QString::number(info->clockSpeed) + " Hz");
+            addInfo(tableInfo, &row, "Replayer Rate",
+                    info->clockSpeed == 0 ? "-" : QString::number(info->clockSpeed) + " Hz");
 
             if (info->fileFormatSpecific == "SNDH") {
                 addInfo(tableInfo, &row, "Ripper", fromUtf8OrLatin1(info->ripper));
