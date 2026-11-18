@@ -92,32 +92,32 @@ public:
         trackLengthFromCueSheet = track_get_length(currentTrack);
 
         if (Cdtext const *cdText = cd_get_cdtext(cd)) {
-            if (const char *s; (s = cdtext_get(PTI_TITLE, cdText))) {
+            if (const char *s; (s = cue_cdtext_get(PTI_TITLE, cdText))) {
                 metadataCueCdTextAlbum = pair("Album", s);
             }
-            if (const char *s; (s = cdtext_get(PTI_PERFORMER, cdText))) {
+            if (const char *s; (s = cue_cdtext_get(PTI_PERFORMER, cdText))) {
                 metadataCueCdTextAlbumArtist = pair("Album Artist", s);
             }
-            if (const char *s; (s = cdtext_get(PTI_COMPOSER, cdText))) {
+            if (const char *s; (s = cue_cdtext_get(PTI_COMPOSER, cdText))) {
                 metadataCueCdTextComposer = pair("Composer", s);
             }
-            if (const char *s; (s = cdtext_get(PTI_GENRE, cdText))) {
+            if (const char *s; (s = cue_cdtext_get(PTI_GENRE, cdText))) {
                 metadataCueCdTextGenre = pair("Genre", s);
             }
         }
 
         if (Cdtext const *trackText = track_get_cdtext(currentTrack)) {
             const char *s;
-            if ((s = cdtext_get(PTI_TITLE, trackText))) {
+            if ((s = cue_cdtext_get(PTI_TITLE, trackText))) {
                 metadataCueTrackTextTitle = pair("Title", s);
             }
-            if ((s = cdtext_get(PTI_PERFORMER, trackText))) {
+            if ((s = cue_cdtext_get(PTI_PERFORMER, trackText))) {
                 metadataCueTrackTextArtist = pair("Artist", s);
             }
-            if ((s = cdtext_get(PTI_COMPOSER, trackText))) {
+            if ((s = cue_cdtext_get(PTI_COMPOSER, trackText))) {
                 metadataCueTrackTextComposer = pair("Composer", s);
             }
-            if ((s = cdtext_get(PTI_GENRE, trackText))) {
+            if ((s = cue_cdtext_get(PTI_GENRE, trackText))) {
                 metadataCueTrackTextGenre = pair("Genre", s);
             }
         }
