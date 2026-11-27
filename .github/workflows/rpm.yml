@@ -31,7 +31,7 @@ jobs:
           Name:           bzr-player
           Version:        ${{env.BZR2_VERSION}}
           Release:        1
-          Summary:        Audio player supporting a wide array of multi-platform exotic file formats
+          Summary:        Advanced audio player supporting a wide array of exotic file formats
           Group:          Applications/Multimedia
           License:        GPL-3.0-only
           URL:            https://github.com/bzr-player/bzr-player
@@ -52,7 +52,7 @@ jobs:
           Requires:       qt6-qtsvg
 
           %description
-          Audio player supporting a wide array of multi-platform exotic file formats
+          Advanced audio player supporting a wide array of exotic file formats
 
           %prep
           find %{_builddir} -mindepth 1 -delete
@@ -90,7 +90,7 @@ jobs:
           Type=Application
           Name=BZR Player 2
           GenericName=Audio Player
-          Comment=Audio player supporting a wide array of multi-platform exotic file formats
+          Comment=Advanced audio player supporting a wide array of exotic file formats
           Exec=%{_prefix}/bin/bzr-player %U
           Icon=bzr-player
           Terminal=false

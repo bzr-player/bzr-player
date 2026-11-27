@@ -14,10 +14,10 @@
 
 ## Overview
 
-Advanced audio player for **Windows** and **Linux** supporting a wide array of multi-platform **exotic** file
-formats, written in **C++** and **Qt** with a sound engine based on **FMOD**.\
-The first BZR version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version which is
-coded pretty much from scratch.
+Advanced audio player for **Windows** and **Linux** supporting a wide array of **exotic** file formats, written in
+**C++** and **Qt** with a sound engine based on **FMOD**.\
+The first BZR Player version was released in 2008, the last 1.x in 2019: this is the beginning of the new 2.x version
+which is coded pretty much from scratch.
 
 ### Provided plugins
 

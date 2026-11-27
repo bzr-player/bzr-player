@@ -117,7 +117,7 @@ jobs:
           Type=Application
           Name=BZR Player 2
           GenericName=Audio Player
-          Comment=Audio player supporting a wide array of multi-platform exotic file formats
+          Comment=Advanced audio player supporting a wide array of exotic file formats
           Exec=/usr/bin/bzr-player %U
           Icon=bzr-player
           Terminal=false
@@ -137,7 +137,7 @@ jobs:
           Version: ${{env.BZR2_VERSION}}-1
           Maintainer: Ciro Scognamiglio <ciro.scognamiglio88 at gmail dot com>
           Architecture: amd64
-          Description: Audio player supporting a wide array of multi-platform exotic file formats
+          Description: Advanced audio player supporting a wide array of exotic file formats
           Depends: fonts-noto-cjk, libqt6core6, libqt6network6, libqt6openglwidgets6, libqt6svg6, libqt6xml6, libqt-advanced-docking-system
           Homepage: https://github.com/bzr-player/bzr-player
           EOF
@@ -176,9 +176,9 @@ jobs:
               <metadata_license>CC0-1.0</metadata_license>
               <project_license>GPL-3.0-only</project_license>
               <name>BZR Player 2</name>
-              <summary>Audio player supporting a wide array of multi-platform exotic file formats</summary>
+              <summary>Advanced audio player supporting a wide array of exotic file formats</summary>
               <description>
-                  <p>Audio player supporting a wide array of multi-platform exotic file formats</p>
+                  <p>Advanced audio player supporting a wide array of exotic file formats</p>
               </description>
               <url type="homepage">https://github.com/bzr-player/bzr-player</url>
               <launchable type="desktop-id">io.github.bzr-player.desktop</launchable>
