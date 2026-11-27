@@ -177,6 +177,10 @@ void FileInfoParser::updateFileInfo(QTableWidget *tableInfo, const PlaylistItem 
             addInfo(tableInfo, &row, "Patterns", QString::number(info->numPatterns));
             addInfo(tableInfo, &row, "Pattern Length", QString::number(info->modPatternRows));
             break;
+        case PLUGIN_jaytrax:
+            addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
+            addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));
+            break;
         case PLUGIN_klystron:
             addInfo(tableInfo, &row, "Title", fromUtf8OrLatin1(info->title));
             addInfo(tableInfo, &row, "Channels", QString::number(info->numChannels));

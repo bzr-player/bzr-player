@@ -148,7 +148,13 @@ static FMOD_RESULT F_CALL open(FMOD_CODEC_STATE *codec, FMOD_MODE usermode, FMOD
 
     jaytrax_changeSubsong(plugin->jay, plugin->info->currentSubsong);
 
-    plugin->info->numSubsongs = plugin->jay->song->nrofsongs;
+    if (const string title = song->subsongs[plugin->info->currentSubsong]->name;
+        title != "Empty") {
+        plugin->info->title = song->subsongs[plugin->info->currentSubsong]->name;
+    }
+
+    plugin->info->numChannels = song->subsongs[plugin->info->currentSubsong]->nrofchans;
+    plugin->info->numSubsongs = song->nrofsongs;
     plugin->info->plugin = PLUGIN_jaytrax;
     plugin->info->pluginName = PLUGIN_jaytrax_NAME;
     plugin->info->fileFormat = "Jaytrax";
