@@ -206,7 +206,7 @@ static FMOD_RESULT F_CALL setPosition(FMOD_CODEC_STATE *codec, int subsound, uns
     auto *plugin = static_cast<pluginKlystron *>(codec->plugindata);
 
     if (postype == FMOD_TIMEUNIT_MS) {
-        bool shouldReinit = false;
+        bool shouldReinit;
         bool shouldSeek = false;
         uint32_t seekPosition = 0;
 
