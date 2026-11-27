@@ -42,7 +42,7 @@ BZR2 is designed with a modular plugin system to support multiple third party au
 - **plugin_libkss**: [libkss](https://github.com/digital-sound-antiques/libkss)
 - **plugin_libopenmpt**: [libopenmpt](https://lib.openmpt.org/libopenmpt)
 - **plugin_libpac**: [libpac](http://prdownloads.sourceforge.net/libpac)
-- **plugin_libsidplayfp**: [libsidplayfp](https://github.com/libsidplayfp/libsidplayfp) + [sidid](https://github.com/cadaver/sidid)
+- **plugin_libsidplayfp**: [libsidplayfp](https://github.com/libsidplayfp/libsidplayfp) + [libresidfp](https://github.com/libsidplayfp/libresidfp) + [sidid](https://github.com/cadaver/sidid)
 - **plugin_libvgm**: [libvgm](https://github.com/ValleyBell/libvgm)
 - **plugin_libxmp**: [libxmp](https://github.com/libxmp/libxmp)
 - **plugin_mdxmini**: [mdxmini](https://github.com/mistydemeo/mdxmini)
@@ -60,13 +60,13 @@ In addition to these **FMOD** itself is used to provide support for both MIDI an
 
 ### Supported formats
 
-[Here](samples) you can find an (incomplete) list, grouped by plugin, of supported formats along with samples 
+[Here](samples) you can find an (incomplete) list of supported file formats (grouped by plugin) along with samples 
 
 ----
 
 ## How to get
 
-[![AUR](https://img.shields.io/aur/version/bzr-player.svg?label=AUR)](https://aur.archlinux.org/packages/bzr-player/)\
+[![AUR](https://img.shields.io/aur/version/bzr-player.svg?label=AUR)](https://aur.archlinux.org/packages/bzr-player)\
 [Releases & changelogs](https://github.com/bzr-player/bzr-player/releases)\
 [Old versions archive](https://github.com/bzr-player/bzr-player/tree/binaries_archive/binaries)
 
@@ -76,7 +76,7 @@ In addition to these **FMOD** itself is used to provide support for both MIDI an
 
 ### Windows
 
-**[MSYS2](https://www.msys2.org/)** with following packages is required:
+**[MSYS2](https://www.msys2.org)** with following packages is required:
 
 `base-devel` `mingw-w64-ucrt-x86_64-cmake` `mingw-w64-ucrt-x86_64-qt6-base` `mingw-w64-ucrt-x86_64-qt6-svg`
 `mingw-w64-ucrt-x86_64-qt-advanced-docking-system` `mingw-w64-ucrt-x86_64-SDL2` `mingw-w64-ucrt-x86_64-toolchain`
